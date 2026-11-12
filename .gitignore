@@ -1,0 +1,29 @@
+# Virtual Environment
+venv/
+env/
+ENV/
+.env
+
+# Python Cache & Bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyd
+
+# Datasets (Do NOT upload 20,000+ raw training images to GitHub)
+dataset/
+PlantVillage/
+
+# Intermediate Data Splits & Large Artifacts
+data/splits/
+outputs/predictions/
+
+# Matplotlib & Streamlit local caches
+assets/.matplotlib/
+.streamlit/secrets.toml
+
+# OS & IDE Files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
