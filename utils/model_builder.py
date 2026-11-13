@@ -344,13 +344,31 @@ def load_model(path: Optional[str] = None) -> keras.Model:
         If the model file does not exist.
     """
     import os
+    from config import CHECKPOINT_PATH, MODEL_DIR
     load_path = path or SAVED_MODEL_PATH
 
     if not os.path.exists(load_path):
-        raise FileNotFoundError(
-            f"No model found at '{load_path}'. "
-            "Train the model first by running: python train.py"
-        )
+        # Check standard candidate filenames in models/ directory
+        candidates = [
+            load_path,
+            CHECKPOINT_PATH,
+            os.path.join(MODEL_DIR, "plant_disease_cnn_v2.keras"),
+            os.path.join(MODEL_DIR, "plant_disease_cnn_v2_best.keras"),
+            os.path.join(MODEL_DIR, "plant_disease_cnn.keras"),
+        ]
+        found = None
+        for cand in candidates:
+            if cand and os.path.exists(cand):
+                found = cand
+                break
+        if found:
+            logger.info("Default model path '%s' not found; using existing candidate '%s'.", load_path, found)
+            load_path = found
+        else:
+            raise FileNotFoundError(
+                f"No model found at '{load_path}'. "
+                "Train the model first by running: python train.py"
+            )
 
     model = keras.models.load_model(load_path)
     logger.info("Model loaded from: %s", load_path)

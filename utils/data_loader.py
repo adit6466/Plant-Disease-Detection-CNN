@@ -124,18 +124,32 @@ def validate_dataset_structure() -> bool:
 
 
 def get_class_names() -> List[str]:
-    """Read sorted class names from the active dataset root."""
-    root = FLAT_DATASET_DIR if use_flat_layout() else TRAIN_DIR
-    if not os.path.isdir(root):
-        raise FileNotFoundError(
-            f"Dataset directory not found: '{root}'.\n"
-            "Check FLAT_DATASET_DIR or TRAIN_DIR in config.py."
-        )
-    classes = sorted(
-        d for d in os.listdir(root) if os.path.isdir(os.path.join(root, d))
-    )
-    logger.info("Detected %d class(es): %s", len(classes), classes)
-    return classes
+    """
+    Read sorted class names from the active dataset root if present;
+    otherwise gracefully fall back to config.CLASS_NAMES (e.g. in deployed web environments).
+    """
+    try:
+        if use_flat_layout():
+            root = FLAT_DATASET_DIR
+        elif os.path.isdir(TRAIN_DIR):
+            root = TRAIN_DIR
+        else:
+            root = None
+
+        if root and os.path.isdir(root):
+            classes = sorted(
+                d for d in os.listdir(root) if os.path.isdir(os.path.join(root, d))
+            )
+            if classes:
+                logger.info("Detected %d class(es) from directory: %s", len(classes), classes)
+                return classes
+    except Exception as exc:
+        logger.warning("Could not read class names from dataset directory: %s", exc)
+
+    # Fallback for cloud deployment / web app inference
+    from config import CLASS_NAMES
+    logger.info("Using pre-defined class names (%d classes) for deployment/inference.", len(CLASS_NAMES))
+    return CLASS_NAMES
 
 
 # ─────────────────────────────────────────────

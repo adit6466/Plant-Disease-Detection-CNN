@@ -128,14 +128,29 @@ def main():
 
     # ── Model & Data Loading ─────────────────────────────────────
     model_loaded = True
+    model = None
+    class_names = []
+    disease_df = None
+
     try:
-        model       = _load_model()
         class_names = _load_class_names()
-        disease_df  = _load_disease_df()
-    except FileNotFoundError:
+    except Exception as exc:
+        st.error(f"⚠️ Failed to load class names: `{exc}`")
+        model_loaded = False
+
+    try:
+        disease_df = _load_disease_df()
+    except Exception as exc:
+        st.error(f"⚠️ Failed to load disease database: `{exc}`")
+        model_loaded = False
+
+    try:
+        model = _load_model()
+    except FileNotFoundError as fnf:
         st.error(
-            "⚠️ **Trained model not found.**\n\n"
-            "Please train the model first:\n"
+            f"⚠️ **Trained model not found at `{SAVED_MODEL_PATH}`.**\n\n"
+            f"Details: {fnf}\n\n"
+            "Please ensure the model file is available or run training:\n"
             "```bash\n"
             "python train.py\n"
             "```"
@@ -145,7 +160,7 @@ def main():
         st.error(f"⚠️ Failed to load model: `{exc}`")
         model_loaded = False
 
-    if not model_loaded:
+    if not model_loaded or model is None:
         st.stop()
 
     # ── File Uploader ─────────────────────────────────────────────
