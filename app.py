@@ -28,6 +28,10 @@ import numpy as np
 import streamlit as st
 from PIL import Image
 
+import importlib
+import utils.image_processor
+importlib.reload(utils.image_processor)
+
 from config import (
     APP_TITLE, APP_DESCRIPTION,
     SAVED_MODEL_PATH, CONFIDENCE_THRESHOLD,
@@ -239,9 +243,14 @@ def main():
                 st.subheader("🔥 Grad-CAM Heatmap")
                 try:
                     with st.spinner("Generating Grad-CAM heatmap …"):
-                        heatmap = generate_gradcam(
-                            model, img_array, pred_index=top_class_idx
-                        )
+                        try:
+                            heatmap = generate_gradcam(
+                                model, img_array, None, top_class_idx
+                            )
+                        except TypeError:
+                            heatmap = generate_gradcam(
+                                model, img_array, pred_index=top_class_idx
+                            )
                         blended = overlay_gradcam(pil_image, heatmap, alpha=0.45)
                         st.image(
                             blended,
