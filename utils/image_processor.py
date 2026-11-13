@@ -299,7 +299,7 @@ def plot_confusion_matrix(
 def generate_gradcam(
     model,
     image_array: np.ndarray,
-    last_conv_layer_name: str,
+    last_conv_layer_name: Optional[str] = None,
     pred_index: Optional[int] = None,
 ) -> np.ndarray:
     """
@@ -308,12 +308,16 @@ def generate_gradcam(
     Grad-CAM highlights the regions of the image that most influenced
     the model's prediction, aiding interpretability.
 
+    Supports both:
+      1. Transfer-learning models with a backbone submodel (e.g. MobileNetV2, EfficientNet).
+      2. Standard flat CNN architectures (e.g. custom CNNs).
+
     Parameters
     ----------
     model : keras.Model
     image_array : np.ndarray  shape (1, H, W, C), values in [0, 1]
-    last_conv_layer_name : str
-        Name of the last convolutional layer in the model.
+    last_conv_layer_name : str | None
+        Name of the last convolutional layer in the model. If None, auto-detected.
     pred_index : int | None
         Class index to explain; defaults to the argmax prediction.
 
@@ -323,13 +327,58 @@ def generate_gradcam(
     """
     import tensorflow as tf
 
+    img_tensor = tf.convert_to_tensor(image_array, dtype=tf.float32)
+
+    # 1. Architecture with backbone submodel (e.g. MobileNetV2 / EfficientNet)
+    backbone = None
+    classifier_layers = []
+    found_backbone = False
+
+    for layer in model.layers:
+        if hasattr(layer, "layers") and not found_backbone:
+            backbone = layer
+            found_backbone = True
+        elif found_backbone:
+            classifier_layers.append(layer)
+
+    if backbone is not None:
+        with tf.GradientTape() as tape:
+            conv_outputs = backbone(img_tensor, training=False)
+            tape.watch(conv_outputs)
+            x = conv_outputs
+            for layer in classifier_layers:
+                x = layer(x, training=False)
+            predictions = x
+            if pred_index is None:
+                pred_index = tf.argmax(predictions[0])
+            class_channel = predictions[:, pred_index]
+
+        grads = tape.gradient(class_channel, conv_outputs)
+        pooled_grads = tf.reduce_mean(grads, axis=(0, 1, 2))
+        conv_outputs = conv_outputs[0]
+        heatmap = conv_outputs @ pooled_grads[..., tf.newaxis]
+        heatmap = tf.squeeze(heatmap)
+        heatmap = tf.maximum(heatmap, 0) / (tf.math.reduce_max(heatmap) + 1e-8)
+        return heatmap.numpy()
+
+    # 2. Flat architecture (e.g. custom CNN)
+    target_layer_name = last_conv_layer_name
+    if not target_layer_name:
+        for layer in reversed(model.layers):
+            if hasattr(layer, "filters") or "conv" in layer.name.lower():
+                target_layer_name = layer.name
+                break
+
+    if not target_layer_name:
+        raise ValueError("No convolutional layer found in model for Grad-CAM.")
+
     grad_model = tf.keras.models.Model(
         inputs=model.inputs,
-        outputs=[model.get_layer(last_conv_layer_name).output, model.output],
+        outputs=[model.get_layer(target_layer_name).output, model.output],
     )
 
     with tf.GradientTape() as tape:
-        conv_outputs, predictions = grad_model(image_array)
+        conv_outputs, predictions = grad_model(img_tensor, training=False)
         if pred_index is None:
             pred_index = tf.argmax(predictions[0])
         class_channel = predictions[:, pred_index]
@@ -376,8 +425,12 @@ def overlay_gradcam(
         )
     )
 
-    # Apply colour map
-    colormap = cm.get_cmap("jet")
+    # Apply colour map (compatible across all Matplotlib versions)
+    try:
+        import matplotlib
+        colormap = matplotlib.colormaps["jet"]
+    except Exception:
+        colormap = plt.get_cmap("jet")
     heatmap_colored = np.uint8(colormap(heatmap_resized / 255.0) * 255)[:, :, :3]
 
     blended = np.uint8(img_array * (1 - alpha) + heatmap_colored * alpha)

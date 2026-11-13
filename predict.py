@@ -156,16 +156,15 @@ def predict_single(
 
     # Optionally generate Grad-CAM
     if gradcam:
-        conv_layer = last_conv_layer or _find_last_conv_layer(model)
-        if conv_layer:
-            heatmap = generate_gradcam(model, img_array, conv_layer, pred_index)
+        try:
+            heatmap = generate_gradcam(model, img_array, last_conv_layer, pred_index)
             stem     = Path(image_path).stem
             gc_path  = os.path.join(PREDICTIONS_DIR, f"{stem}_gradcam.png")
             os.makedirs(PREDICTIONS_DIR, exist_ok=True)
             overlay_gradcam(image_path, heatmap, save_path=gc_path)
             logger.info("Grad-CAM saved: %s", gc_path)
-        else:
-            logger.warning("No convolutional layer found — Grad-CAM skipped.")
+        except Exception as exc:
+            logger.warning("Grad-CAM generation failed: %s", exc)
 
     return {
         "image_path": image_path,

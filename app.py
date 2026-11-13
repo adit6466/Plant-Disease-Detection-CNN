@@ -238,25 +238,16 @@ def main():
             if enable_gradcam:
                 st.subheader("🔥 Grad-CAM Heatmap")
                 try:
-                    # Find last conv layer automatically
-                    conv_layer = None
-                    for layer in reversed(model.layers):
-                        if "conv" in layer.name.lower():
-                            conv_layer = layer.name
-                            break
-
-                    if conv_layer:
+                    with st.spinner("Generating Grad-CAM heatmap …"):
                         heatmap = generate_gradcam(
-                            model, img_array, conv_layer, top_class_idx
+                            model, img_array, pred_index=top_class_idx
                         )
-                        blended = overlay_gradcam(pil_image, heatmap, alpha=0.4)
+                        blended = overlay_gradcam(pil_image, heatmap, alpha=0.45)
                         st.image(
                             blended,
-                            caption="Grad-CAM: regions most influential to the prediction",
+                            caption="Grad-CAM: highlighted regions show areas most influential to the diagnosis",
                             use_container_width=True,
                         )
-                    else:
-                        st.warning("No convolutional layer found — Grad-CAM unavailable.")
                 except Exception as exc:
                     st.warning(f"Grad-CAM generation failed: {exc}")
 
