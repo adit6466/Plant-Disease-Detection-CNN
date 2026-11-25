@@ -27,3 +27,5 @@ assets/.matplotlib/
 Thumbs.db
 .vscode/
 .idea/
+
+*_backup.py
