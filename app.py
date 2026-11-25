@@ -94,7 +94,9 @@ def inject_premium_theme():
         /* Hide default Streamlit clutter */
         #MainMenu {visibility: hidden;}
         footer {visibility: hidden;}
-        header {visibility: hidden;}
+        header[data-testid="stHeader"] {
+            background: transparent !important;
+        }
 
         /* Modern Typography */
         h1, h2, h3, h4, h5 {
@@ -666,6 +668,60 @@ def render_sidebar():
     )
 
     return enable_gradcam, threshold, top_k
+
+
+# ─────────────────────────────────────────────
+#  Top Navigation & Breadcrumb Header
+# ─────────────────────────────────────────────
+
+def render_top_navigation(current_page: str):
+    """Render a modern top navigation bar with prominent Back button and direct section switcher."""
+    nav_cols = st.columns([1.5, 4.5])
+
+    with nav_cols[0]:
+        if current_page != "Home":
+            if st.button("⬅️ Back to Home", key="top_back_home_btn", use_container_width=True):
+                st.session_state["nav_page"] = "Home"
+                st.rerun()
+        else:
+            st.markdown(
+                """
+                <div style="display:flex; align-items:center; gap:8px; padding-top:6px;">
+                    <span style="font-size:1.4rem;">🌿</span>
+                    <span style="font-weight:800; color:var(--primary-forest); font-size:1.1rem; letter-spacing:-0.01em;">AgriVision AI</span>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+
+    with nav_cols[1]:
+        pages = [
+            ("Home", "🏡", "Home"),
+            ("Disease Detection", "🔬", "Detection"),
+            ("Disease Library", "📚", "Library"),
+            ("Model Insights", "📊", "Insights"),
+            ("About Project", "ℹ️", "About"),
+        ]
+        btn_cols = st.columns(len(pages))
+        for col, (page_full, icon, short_label) in zip(btn_cols, pages):
+            with col:
+                is_active = (page_full == current_page)
+                label = f"{icon} {short_label}"
+                if is_active:
+                    st.markdown(
+                        f"""
+                        <div style="text-align:center; padding:10px 4px; background:var(--deep-emerald); color:#FFFFFF; border-radius:12px; font-weight:700; font-size:0.82rem; box-shadow:0 3px 10px rgba(23,107,80,0.25);">
+                            {label}
+                        </div>
+                        """,
+                        unsafe_allow_html=True,
+                    )
+                else:
+                    if st.button(label, key=f"nav_top_{page_full}", use_container_width=True):
+                        st.session_state["nav_page"] = page_full
+                        st.rerun()
+
+    st.markdown("<div style='height: 10px; margin-bottom: 14px; border-bottom: 1px solid var(--soft-sage);'></div>", unsafe_allow_html=True)
 
 
 # ─────────────────────────────────────────────
@@ -1530,6 +1586,9 @@ def main():
 
     current_page = st.session_state.get("nav_page", "Home")
 
+    # Render top navigation bar with prominent Back button and quick switcher
+    render_top_navigation(current_page)
+
     # Route to selected page
     if current_page == "Home":
         render_home_page()
@@ -1541,6 +1600,15 @@ def main():
         render_insights_page()
     elif current_page == "About Project":
         render_about_page()
+
+    # On non-Home pages, offer a bottom 'Back to Home' shortcut
+    if current_page != "Home":
+        st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
+        bot_col1, bot_col2, bot_col3 = st.columns([1.5, 2, 1.5])
+        with bot_col1:
+            if st.button("⬅️ Return to Home", key="bottom_return_home_btn", use_container_width=True):
+                st.session_state["nav_page"] = "Home"
+                st.rerun()
 
     # Universal Clean Footer
     st.markdown("<div style='height: 48px;'></div>", unsafe_allow_html=True)
