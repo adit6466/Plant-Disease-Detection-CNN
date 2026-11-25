@@ -76,7 +76,7 @@ NUM_CLASSES = len(CLASS_NAMES)
 # ─────────────────────────────────────────────
 #  Model Architecture
 # ─────────────────────────────────────────────
-MODEL_NAME          = "plant_disease_cnn_v2"
+MODEL_NAME          = "plant_disease_cnn_v3"
 SAVED_MODEL_PATH    = os.path.join(MODEL_DIR, f"{MODEL_NAME}.keras")
 CHECKPOINT_PATH     = os.path.join(MODEL_DIR, f"{MODEL_NAME}_best.keras")
 
@@ -84,13 +84,13 @@ CHECKPOINT_PATH     = os.path.join(MODEL_DIR, f"{MODEL_NAME}_best.keras")
 #  Training Hyperparameters
 # ─────────────────────────────────────────────
 EPOCHS              = 30
-LEARNING_RATE       = 1e-4
+LEARNING_RATE       = 5e-5
 DROPOUT_RATE        = 0.5
 L2_REGULARIZATION   = 1e-4
 
 # Fine-tuning (transfer learning) settings
-FINE_TUNE           = False         # disable fine-tuning initially — freeze backbone, train head only (faster + less RAM)
-FINE_TUNE_AT        = 100           # unfreeze layers from this index onward
+FINE_TUNE           = True          # enabled for high-accuracy MobileNetV2 fine-tuning
+FINE_TUNE_AT        = 115           # unfreeze layers from index 115 onward (blocks 14-16)
 
 # Early stopping / reduce-LR patience
 EARLY_STOP_PATIENCE = 7
@@ -122,10 +122,10 @@ DISEASE_INFO_CSV = os.path.join(DATA_DIR, "disease_info.csv")
 #  Output Artifact Names
 # ─────────────────────────────────────────────
 DATASET_AUDIT_REPORT    = os.path.join(REPORTS_DIR, "dataset_audit_report.txt")
-TRAINING_HISTORY_PLOT   = os.path.join(GRAPHS_DIR, "training_history_v2.png")
-CONFUSION_MATRIX_PLOT   = os.path.join(GRAPHS_DIR, "confusion_matrix_v2.png")
-CLASSIFICATION_REPORT   = os.path.join(REPORTS_DIR, "classification_report_v2.txt")
-EVALUATION_RESULTS_CSV  = os.path.join(REPORTS_DIR, "evaluation_results_v2.csv")
+TRAINING_HISTORY_PLOT   = os.path.join(GRAPHS_DIR, "training_history_v3.png")
+CONFUSION_MATRIX_PLOT   = os.path.join(GRAPHS_DIR, "confusion_matrix_v3.png")
+CLASSIFICATION_REPORT   = os.path.join(REPORTS_DIR, "classification_report_v3.txt")
+EVALUATION_RESULTS_CSV  = os.path.join(REPORTS_DIR, "evaluation_results_v3.csv")
 
 # ─────────────────────────────────────────────
 #  Logging

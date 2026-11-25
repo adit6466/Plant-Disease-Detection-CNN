@@ -584,6 +584,51 @@ def inject_premium_theme():
 #  Cached Resource Loaders
 # ─────────────────────────────────────────────
 
+def _get_benchmark_metrics() -> dict:
+    """Dynamically read the latest verified evaluation metrics from reports."""
+    rep_v3 = os.path.join(REPORTS_DIR, "classification_report_v3.txt")
+    rep_v2 = os.path.join(REPORTS_DIR, "classification_report_v2.txt")
+    rep_default = os.path.join(REPORTS_DIR, "classification_report.txt")
+
+    target_rep = None
+    for p in [rep_v3, rep_v2, rep_default]:
+        if os.path.exists(p):
+            target_rep = p
+            break
+
+    metrics = {
+        "accuracy": "89.63%",
+        "precision": "0.8918",
+        "recall": "0.8947",
+        "f1": "0.8895",
+        "samples": "2,064",
+        "version": "v2",
+        "report_path": target_rep or rep_v2,
+    }
+
+    if target_rep and os.path.exists(target_rep):
+        try:
+            with open(target_rep, "r", encoding="utf-8") as f:
+                content = f.read()
+            for line in content.splitlines():
+                if "Overall Accuracy" in line:
+                    metrics["accuracy"] = line.split(":")[-1].strip()
+                elif "Macro Precision" in line:
+                    metrics["precision"] = line.split(":")[-1].strip()
+                elif "Macro Recall" in line:
+                    metrics["recall"] = line.split(":")[-1].strip()
+                elif "Macro F1-Score" in line:
+                    metrics["f1"] = line.split(":")[-1].strip()
+                elif "Holdout Test Samples" in line:
+                    metrics["samples"] = line.split(":")[-1].strip()
+            if "v3" in os.path.basename(target_rep):
+                metrics["version"] = "v3"
+        except Exception:
+            pass
+
+    return metrics
+
+
 @st.cache_resource(show_spinner="Loading deep learning model weights …")
 def _load_model():
     """Load and cache the trained Keras model."""
@@ -677,11 +722,12 @@ def render_sidebar():
         enable_gradcam, threshold, top_k = True, float(CONFIDENCE_THRESHOLD), 3
 
     # Sidebar System Specs Card
+    bench = _get_benchmark_metrics()
     st.sidebar.markdown(
-        """
+        f"""
         <div style="background: rgba(228, 238, 230, 0.45); border: 1px solid var(--soft-sage); border-radius: 14px; padding: 14px 16px; margin-top: 10px;">
             <div style="font-size: 0.75rem; font-weight: 700; color: var(--primary-forest); text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.05em;">
-                Verified Benchmark
+                Verified Benchmark ({bench['version'].upper()})
             </div>
             <div style="font-size: 0.82rem; color: var(--dark-text); line-height: 1.8;">
                 <div style="display:flex; justify-content:space-between;">
@@ -690,11 +736,11 @@ def render_sidebar():
                 </div>
                 <div style="display:flex; justify-content:space-between;">
                     <span style="color:var(--muted-text);">Accuracy:</span>
-                    <b style="color:var(--deep-emerald);">89.63% (Test)</b>
+                    <b style="color:var(--deep-emerald);">{bench['accuracy']} (Test)</b>
                 </div>
                 <div style="display:flex; justify-content:space-between;">
                     <span style="color:var(--muted-text);">Holdout:</span>
-                    <b>2,064 images</b>
+                    <b>{bench['samples']} images</b>
                 </div>
                 <div style="display:flex; justify-content:space-between;">
                     <span style="color:var(--muted-text);">Leakage Audit:</span>
@@ -816,8 +862,9 @@ def render_home_page():
     st.markdown("<div style='height: 24px;'></div>", unsafe_allow_html=True)
 
     # 4 Modern KPI Cards
+    bench = _get_benchmark_metrics()
     st.markdown(
-        """
+        f"""
         <div class="kpi-grid">
             <div class="kpi-card">
                 <div class="kpi-val">15</div>
@@ -832,12 +879,12 @@ def render_home_page():
             <div class="kpi-card">
                 <div class="kpi-val">MobileNetV2</div>
                 <div class="kpi-lbl">Deep Neural Backbone</div>
-                <div style="font-size:0.75rem; color:#718078; margin-top:4px;">Pre-trained feature transfer</div>
+                <div style="font-size:0.75rem; color:#718078; margin-top:4px;">Transfer Learning ({bench['version'].upper()})</div>
             </div>
             <div class="kpi-card">
-                <div class="kpi-val">89.63%</div>
+                <div class="kpi-val">{bench['accuracy']}</div>
                 <div class="kpi-lbl">Measured Test Accuracy</div>
-                <div style="font-size:0.75rem; color:#718078; margin-top:4px;">Evaluated on 2,064 holdout leaves</div>
+                <div style="font-size:0.75rem; color:#718078; margin-top:4px;">Evaluated on {bench['samples']} holdout leaves</div>
             </div>
         </div>
         """,
@@ -1384,26 +1431,27 @@ def render_insights_page():
     )
 
     # Core Stats
+    bench = _get_benchmark_metrics()
     st.markdown(
-        """
+        f"""
         <div class="kpi-grid" style="margin-bottom: 28px;">
             <div class="kpi-card">
-                <div class="kpi-val">89.63%</div>
+                <div class="kpi-val">{bench['accuracy']}</div>
                 <div class="kpi-lbl">Overall Test Accuracy</div>
-                <div style="font-size:0.75rem; color:#718078; margin-top:4px;">2,064 unseen test leaves</div>
+                <div style="font-size:0.75rem; color:#718078; margin-top:4px;">{bench['samples']} unseen test leaves</div>
             </div>
             <div class="kpi-card">
-                <div class="kpi-val">0.8918</div>
+                <div class="kpi-val">{bench['precision']}</div>
                 <div class="kpi-lbl">Macro Precision</div>
                 <div style="font-size:0.75rem; color:#718078; margin-top:4px;">Balanced across all 15 classes</div>
             </div>
             <div class="kpi-card">
-                <div class="kpi-val">0.8947</div>
+                <div class="kpi-val">{bench['recall']}</div>
                 <div class="kpi-lbl">Macro Recall</div>
                 <div style="font-size:0.75rem; color:#718078; margin-top:4px;">Low false negative rate</div>
             </div>
             <div class="kpi-card">
-                <div class="kpi-val">0.8895</div>
+                <div class="kpi-val">{bench['f1']}</div>
                 <div class="kpi-lbl">Macro F1-Score</div>
                 <div style="font-size:0.75rem; color:#718078; margin-top:4px;">Harmonic mean accuracy</div>
             </div>
@@ -1415,21 +1463,27 @@ def render_insights_page():
     # Graphs Section
     col_history, col_cm = st.columns(2, gap="large")
 
-    hist_path = os.path.join(GRAPHS_DIR, "training_history_v2.png")
-    if not os.path.exists(hist_path):
-        hist_path = os.path.join(GRAPHS_DIR, "training_history.png")
+    hist_candidates = [
+        os.path.join(GRAPHS_DIR, "training_history_v3.png"),
+        os.path.join(GRAPHS_DIR, "training_history_v2.png"),
+        os.path.join(GRAPHS_DIR, "training_history.png"),
+    ]
+    hist_path = next((p for p in hist_candidates if os.path.exists(p)), hist_candidates[-1])
 
-    cm_path = os.path.join(GRAPHS_DIR, "confusion_matrix_v2.png")
-    if not os.path.exists(cm_path):
-        cm_path = os.path.join(GRAPHS_DIR, "confusion_matrix.png")
+    cm_candidates = [
+        os.path.join(GRAPHS_DIR, "confusion_matrix_v3.png"),
+        os.path.join(GRAPHS_DIR, "confusion_matrix_v2.png"),
+        os.path.join(GRAPHS_DIR, "confusion_matrix.png"),
+    ]
+    cm_path = next((p for p in cm_candidates if os.path.exists(p)), cm_candidates[-1])
 
     with col_history:
         st.markdown(
-            """
+            f"""
             <div class="premium-card">
                 <div class="card-header">
                     <div class="card-title">
-                        <span>📈</span> Training & Validation History
+                        <span>📈</span> Training & Validation History ({bench['version'].upper()})
                     </div>
                     <span class="badge-low">Converged</span>
                 </div>
@@ -1444,11 +1498,11 @@ def render_insights_page():
 
     with col_cm:
         st.markdown(
-            """
+            f"""
             <div class="premium-card">
                 <div class="card-header">
                     <div class="card-title">
-                        <span>🎯</span> Confusion Matrix (Holdout Split)
+                        <span>🎯</span> Confusion Matrix ({bench['version'].upper()} Holdout)
                     </div>
                     <span class="badge-low">15 Classes</span>
                 </div>
@@ -1456,18 +1510,18 @@ def render_insights_page():
             unsafe_allow_html=True,
         )
         if os.path.exists(cm_path):
-            st.image(cm_path, caption="Confusion Matrix on 2,064 Unseen Test Images", use_container_width=True)
+            st.image(cm_path, caption=f"Confusion Matrix on {bench['samples']} Unseen Test Images", use_container_width=True)
         else:
             st.info("Confusion matrix not found at outputs/graphs/.")
         st.markdown("</div>", unsafe_allow_html=True)
 
     # Tabular Classification Report
     st.markdown(
-        """
+        f"""
         <div class="premium-card">
             <div class="card-header">
                 <div class="card-title">
-                    <span>📑</span> Detailed Per-Class Classification Report
+                    <span>📑</span> Detailed Per-Class Classification Report ({bench['version'].upper()})
                 </div>
                 <span class="badge-gold">Holdout Test Set</span>
             </div>
@@ -1475,7 +1529,7 @@ def render_insights_page():
         unsafe_allow_html=True,
     )
 
-    report_path = os.path.join(REPORTS_DIR, "classification_report_v2.txt")
+    report_path = bench["report_path"]
     if os.path.exists(report_path):
         with open(report_path, "r", encoding="utf-8") as f:
             report_text = f.read()
@@ -1663,15 +1717,16 @@ def main():
                 st.rerun()
 
     # Universal Clean Footer
+    bench = _get_benchmark_metrics()
     st.markdown("<div style='height: 48px;'></div>", unsafe_allow_html=True)
     st.markdown(
-        """
+        f"""
         <div style="border-top: 1px solid var(--soft-sage); padding-top: 20px; display: flex; justify-content: space-between; align-items: center; font-size: 0.82rem; color: var(--muted-text); flex-wrap: wrap; gap: 10px;">
             <div>
                 🌿 <b>AgriVision AI</b> · Commercial Precision Agronomy Platform
             </div>
             <div>
-                Verified Holdout Test Accuracy: <b style="color: var(--deep-emerald);">89.63%</b>
+                Verified Holdout Test Accuracy: <b style="color: var(--deep-emerald);">{bench['accuracy']}</b>
             </div>
             <div>
                 <a href="https://github.com/adit6466/Plant-Disease-Detection-CNN" target="_blank" style="color: var(--deep-emerald); text-decoration: none; font-weight: 600;">

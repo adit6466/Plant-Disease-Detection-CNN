@@ -352,8 +352,10 @@ def load_model(path: Optional[str] = None) -> keras.Model:
         candidates = [
             load_path,
             CHECKPOINT_PATH,
-            os.path.join(MODEL_DIR, "plant_disease_cnn_v2.keras"),
+            os.path.join(MODEL_DIR, "plant_disease_cnn_v3_best.keras"),
+            os.path.join(MODEL_DIR, "plant_disease_cnn_v3.keras"),
             os.path.join(MODEL_DIR, "plant_disease_cnn_v2_best.keras"),
+            os.path.join(MODEL_DIR, "plant_disease_cnn_v2.keras"),
             os.path.join(MODEL_DIR, "plant_disease_cnn.keras"),
         ]
         found = None

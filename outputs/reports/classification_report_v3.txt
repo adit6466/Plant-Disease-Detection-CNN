@@ -1,0 +1,31 @@
+Plant Disease Detection — Classification Report (v3 Fine-Tuned)
+=================================================================
+Overall Accuracy      : 90.89%
+Macro Precision       : 0.8986
+Macro Recall          : 0.9129
+Macro F1-Score        : 0.8996
+Weighted F1-Score     : 0.9082
+Holdout Test Samples  : 2,064
+=================================================================
+
+                                             precision    recall  f1-score   support
+
+              Pepper__bell___Bacterial_spot       0.79      1.00      0.88       100
+                     Pepper__bell___healthy       0.92      0.98      0.95       148
+                      Potato___Early_blight       0.96      1.00      0.98       100
+                       Potato___Late_blight       1.00      0.87      0.93       100
+                           Potato___healthy       0.88      0.93      0.90        15
+                      Tomato_Bacterial_spot       0.81      0.99      0.89       213
+                        Tomato_Early_blight       0.91      0.68      0.78       100
+                         Tomato_Late_blight       0.96      0.92      0.94       191
+                           Tomato_Leaf_Mold       0.93      0.96      0.94        95
+                  Tomato_Septoria_leaf_spot       0.92      0.92      0.92       177
+Tomato_Spider_mites_Two_spotted_spider_mite       0.93      0.84      0.88       168
+                        Tomato__Target_Spot       0.90      0.73      0.81       140
+      Tomato__Tomato_YellowLeaf__Curl_Virus       1.00      0.89      0.94       321
+                Tomato__Tomato_mosaic_virus       0.69      1.00      0.81        37
+                             Tomato_healthy       0.88      1.00      0.94       159
+
+                                   accuracy                           0.91      2064
+                                  macro avg       0.90      0.91      0.90      2064
+                               weighted avg       0.92      0.91      0.91      2064
