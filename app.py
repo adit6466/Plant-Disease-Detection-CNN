@@ -63,6 +63,7 @@ def inject_premium_theme():
         """
         <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200');
 
         :root {
             --primary-forest: #123C2F;
@@ -79,9 +80,60 @@ def inject_premium_theme():
         }
 
         /* Global Font & Background */
-        html, body, [class*="css"], [class*="st-"] {
+        html, body {
             font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
             color: var(--dark-text);
+        }
+
+        /* Streamlit Sidebar Collapse/Expand Arrow Replacement */
+        button[data-testid="stSidebarCollapseButton"],
+        [data-testid="stSidebarCollapsedControl"] button {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            width: 32px !important;
+            height: 32px !important;
+            background: #FFFFFF !important;
+            border: 1px solid var(--soft-sage) !important;
+            border-radius: 8px !important;
+            box-shadow: 0 1px 4px rgba(18, 60, 47, 0.08) !important;
+            cursor: pointer !important;
+            overflow: hidden !important;
+        }
+
+        button[data-testid="stSidebarCollapseButton"]:hover,
+        [data-testid="stSidebarCollapsedControl"] button:hover {
+            border-color: var(--deep-emerald) !important;
+            background: var(--soft-sage) !important;
+        }
+
+        /* Hide the raw ligature text 'keyboard_double_arrow...' completely */
+        button[data-testid="stSidebarCollapseButton"] [data-testid="stIconMaterial"],
+        button[data-testid="stSidebarCollapseButton"] span,
+        [data-testid="stSidebarCollapsedControl"] button [data-testid="stIconMaterial"],
+        [data-testid="stSidebarCollapsedControl"] button span {
+            display: none !important;
+            font-size: 0px !important;
+            visibility: hidden !important;
+        }
+
+        /* Display clean modern chevron arrow */
+        button[data-testid="stSidebarCollapseButton"]::after {
+            content: "❮" !important;
+            font-size: 14px !important;
+            font-weight: 800 !important;
+            color: var(--deep-emerald) !important;
+            display: block !important;
+            line-height: 1 !important;
+        }
+
+        [data-testid="stSidebarCollapsedControl"] button::after {
+            content: "❯" !important;
+            font-size: 14px !important;
+            font-weight: 800 !important;
+            color: var(--deep-emerald) !important;
+            display: block !important;
+            line-height: 1 !important;
         }
 
         .stApp {
