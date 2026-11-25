@@ -349,20 +349,136 @@ def inject_premium_theme():
             gap: 10px;
         }
 
-        /* Drag-and-drop Upload Area */
-        .upload-dashed-card {
-            border: 2px dashed #B8D5C4;
-            background: rgba(228, 238, 230, 0.25);
-            border-radius: 16px;
-            padding: 32px 24px;
-            text-align: center;
-            transition: all 0.25s ease;
-            margin-bottom: 16px;
+        /* ═════════════════════════════════════════════
+           FILE UPLOADER — CRYSTAL CLEAR & ATTRACTIVE
+           ═════════════════════════════════════════════ */
+        [data-testid="stFileUploader"],
+        .stFileUploader {
+            width: 100% !important;
+            margin-top: 4px !important;
+            margin-bottom: 12px !important;
+            background: transparent !important;
         }
 
-        .upload-dashed-card:hover {
-            border-color: var(--deep-emerald);
-            background: rgba(228, 238, 230, 0.45);
+        /* The Main Dropzone Container */
+        [data-testid="stFileUploader"] section,
+        [data-testid="stFileUploaderDropzone"],
+        section[data-testid="stFileUploaderDropzone"] {
+            background: #FFFFFF !important;
+            background-color: #FFFFFF !important;
+            border: 2px dashed #2DD4A0 !important;
+            border-radius: 16px !important;
+            padding: 24px 20px !important;
+            box-shadow: 0 4px 18px rgba(18, 60, 47, 0.08) !important;
+            transition: all 0.25s ease !important;
+            color: #172B24 !important;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: center !important;
+        }
+
+        [data-testid="stFileUploader"] section:hover,
+        [data-testid="stFileUploaderDropzone"]:hover,
+        section[data-testid="stFileUploaderDropzone"]:hover {
+            background: #F7FAF8 !important;
+            background-color: #F7FAF8 !important;
+            border-color: #176B50 !important;
+            box-shadow: 0 8px 24px rgba(23, 107, 80, 0.14) !important;
+            transform: translateY(-1px);
+        }
+
+        /* The 'Upload' / 'Browse files' Button Inside Dropzone */
+        [data-testid="stFileUploaderDropzone"] button,
+        section[data-testid="stFileUploaderDropzone"] button,
+        [data-testid="stFileUploader"] button {
+            background: linear-gradient(135deg, #176B50, #123C2F) !important;
+            background-color: #176B50 !important;
+            border: 1.5px solid #176B50 !important;
+            border-radius: 10px !important;
+            padding: 10px 24px !important;
+            box-shadow: 0 4px 14px rgba(23, 107, 80, 0.28) !important;
+            cursor: pointer !important;
+            transition: all 0.2s ease !important;
+        }
+
+        /* High-contrast crisp white text and icon inside the Upload button */
+        [data-testid="stFileUploaderDropzone"] button *,
+        [data-testid="stFileUploaderDropzone"] button p,
+        [data-testid="stFileUploaderDropzone"] button span,
+        [data-testid="stFileUploaderDropzone"] button div,
+        [data-testid="stFileUploaderDropzone"] button svg,
+        section[data-testid="stFileUploaderDropzone"] button *,
+        section[data-testid="stFileUploaderDropzone"] button p,
+        section[data-testid="stFileUploaderDropzone"] button span,
+        section[data-testid="stFileUploaderDropzone"] button div,
+        section[data-testid="stFileUploaderDropzone"] button svg,
+        [data-testid="stFileUploader"] button *,
+        [data-testid="stFileUploader"] button p,
+        [data-testid="stFileUploader"] button span {
+            color: #FFFFFF !important;
+            fill: #FFFFFF !important;
+            stroke: #FFFFFF !important;
+            font-weight: 700 !important;
+            font-size: 0.95rem !important;
+            letter-spacing: 0.02em !important;
+        }
+
+        [data-testid="stFileUploaderDropzone"] button:hover,
+        section[data-testid="stFileUploaderDropzone"] button:hover,
+        [data-testid="stFileUploader"] button:hover {
+            background: #123C2F !important;
+            background-color: #123C2F !important;
+            border-color: #123C2F !important;
+            box-shadow: 0 6px 18px rgba(18, 60, 47, 0.4) !important;
+            transform: translateY(-1px) !important;
+        }
+
+        /* Instructions Text & Size Limits Inside Dropzone */
+        [data-testid="stFileUploaderDropzone"] [data-testid="stFileUploaderDropzoneInstructions"],
+        [data-testid="stFileUploaderDropzone"] [data-testid="stFileUploaderInstructions"],
+        [data-testid="stFileUploaderDropzone"] span,
+        [data-testid="stFileUploaderDropzone"] div,
+        section[data-testid="stFileUploaderDropzone"] span,
+        section[data-testid="stFileUploaderDropzone"] div {
+            color: #172B24 !important;
+            font-weight: 600 !important;
+            font-size: 0.92rem !important;
+        }
+
+        /* File Size Limit & Formats helper label (e.g. 200MB per file • JPG, PNG...) */
+        [data-testid="stFileUploaderDropzone"] small,
+        section[data-testid="stFileUploaderDropzone"] small,
+        [data-testid="stFileUploader"] small {
+            color: #4A5B53 !important;
+            font-weight: 600 !important;
+            font-size: 0.85rem !important;
+            display: inline-block !important;
+            margin-top: 4px !important;
+        }
+
+        /* Uploaded File Row / Chip after file is selected */
+        [data-testid="stFileUploaderFile"],
+        [data-testid="stFileUploaderFileData"] {
+            background: #F7FAF8 !important;
+            border: 1px solid #E4EEE6 !important;
+            border-radius: 12px !important;
+            padding: 10px 14px !important;
+            margin-top: 10px !important;
+            color: #172B24 !important;
+        }
+
+        [data-testid="stFileUploaderFileName"] {
+            color: #123C2F !important;
+            font-weight: 700 !important;
+            font-size: 0.92rem !important;
+        }
+
+        [data-testid="stFileUploaderDeleteBtn"] button {
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            color: #E03131 !important;
         }
 
         /* Buttons Styling — Red Text Inside Buttons */
@@ -1048,13 +1164,17 @@ def render_detection_page(model, class_names, disease_df, enable_gradcam, thresh
         if input_method == "📁 Upload File":
             st.markdown(
                 """
-                <div class="upload-dashed-card">
-                    <div style="font-size: 2.2rem; margin-bottom: 6px;">🍃</div>
-                    <div style="font-weight: 700; color: var(--primary-forest); font-size: 0.95rem;">
-                        Select or Drag & Drop Leaf Image
+                <div style="background: rgba(228, 238, 230, 0.4); border: 1px solid var(--soft-sage); border-radius: 14px; padding: 14px 18px; margin-bottom: 12px; display: flex; align-items: center; gap: 14px;">
+                    <div style="font-size: 1.8rem; background: var(--pure-white); width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(18,60,47,0.06); flex-shrink: 0;">
+                        🍃
                     </div>
-                    <div style="font-size: 0.78rem; color: var(--muted-text); margin-top: 4px;">
-                        Supported Formats: JPG, JPEG, PNG, WEBP, BMP
+                    <div>
+                        <div style="font-weight: 700; color: var(--primary-forest); font-size: 0.95rem;">
+                            Leaf Image Upload
+                        </div>
+                        <div style="font-size: 0.82rem; color: var(--muted-text); margin-top: 2px;">
+                            Click <b>Upload</b> below or drag & drop leaf file (JPG, PNG, WEBP, BMP up to 200MB)
+                        </div>
                     </div>
                 </div>
                 """,
