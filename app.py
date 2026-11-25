@@ -122,7 +122,7 @@ def inject_premium_theme():
             content: "❮" !important;
             font-size: 14px !important;
             font-weight: 800 !important;
-            color: #E03131 !important;
+            color: var(--deep-emerald) !important;
             display: block !important;
             line-height: 1 !important;
         }
@@ -131,7 +131,7 @@ def inject_premium_theme():
             content: "❯" !important;
             font-size: 14px !important;
             font-weight: 800 !important;
-            color: #E03131 !important;
+            color: var(--deep-emerald) !important;
             display: block !important;
             line-height: 1 !important;
         }
@@ -481,49 +481,65 @@ def inject_premium_theme():
             color: #E03131 !important;
         }
 
-        /* Buttons Styling — Red Text Inside Buttons */
+        /* ══════════════════════════════════════════════════════
+           UNIFIED BUTTONS STYLING — RICH EMERALD & CRISP WHITE
+           Matching the Upload Button Design
+           ══════════════════════════════════════════════════════ */
         .stButton>button,
         div[data-testid="stButton"] button,
         .stDownloadButton>button,
         div[data-testid="stDownloadButton"] button,
         button[data-testid="baseButton-secondary"],
         button[data-testid="baseButton-primary"] {
-            background-color: var(--pure-white) !important;
-            color: #E03131 !important;
-            border: 1.5px solid #E03131 !important;
+            background: linear-gradient(135deg, #176B50, #123C2F) !important;
+            background-color: #176B50 !important;
+            color: #FFFFFF !important;
+            border: 1.5px solid #176B50 !important;
             border-radius: 12px !important;
             font-weight: 700 !important;
-            padding: 12px 26px !important;
+            padding: 10px 24px !important;
             font-size: 0.95rem !important;
-            box-shadow: 0 3px 12px rgba(224, 49, 49, 0.12) !important;
+            box-shadow: 0 4px 14px rgba(23, 107, 80, 0.28) !important;
             transition: all 0.2s ease !important;
+            cursor: pointer !important;
         }
 
-        /* Ensure all text/spans/paragraphs inside buttons render in vibrant Red */
+        /* High-contrast crisp white typography & icons inside all buttons */
         .stButton>button *,
         .stButton>button p,
         .stButton>button span,
         .stButton>button div,
+        .stButton>button svg,
         div[data-testid="stButton"] button *,
         div[data-testid="stButton"] button p,
         div[data-testid="stButton"] button span,
         div[data-testid="stButton"] button div,
+        div[data-testid="stButton"] button svg,
         .stDownloadButton>button *,
         .stDownloadButton>button p,
         .stDownloadButton>button span,
         .stDownloadButton>button div,
+        .stDownloadButton>button svg,
         div[data-testid="stDownloadButton"] button *,
         div[data-testid="stDownloadButton"] button p,
         div[data-testid="stDownloadButton"] button span,
         div[data-testid="stDownloadButton"] button div,
+        div[data-testid="stDownloadButton"] button svg,
         button[data-testid="baseButton-secondary"] *,
         button[data-testid="baseButton-secondary"] p,
         button[data-testid="baseButton-secondary"] span,
+        button[data-testid="baseButton-secondary"] div,
+        button[data-testid="baseButton-secondary"] svg,
         button[data-testid="baseButton-primary"] *,
         button[data-testid="baseButton-primary"] p,
-        button[data-testid="baseButton-primary"] span {
-            color: #E03131 !important;
+        button[data-testid="baseButton-primary"] span,
+        button[data-testid="baseButton-primary"] div,
+        button[data-testid="baseButton-primary"] svg {
+            color: #FFFFFF !important;
+            fill: #FFFFFF !important;
+            stroke: #FFFFFF !important;
             font-weight: 700 !important;
+            letter-spacing: 0.01em !important;
         }
 
         .stButton>button:hover,
@@ -532,10 +548,11 @@ def inject_premium_theme():
         div[data-testid="stDownloadButton"] button:hover,
         button[data-testid="baseButton-secondary"]:hover,
         button[data-testid="baseButton-primary"]:hover {
-            background-color: #FFF5F5 !important;
-            border-color: #C92A2A !important;
-            color: #C92A2A !important;
-            box-shadow: 0 6px 18px rgba(201, 42, 42, 0.22) !important;
+            background: #123C2F !important;
+            background-color: #123C2F !important;
+            border-color: #2DD4A0 !important;
+            color: #FFFFFF !important;
+            box-shadow: 0 6px 20px rgba(18, 60, 47, 0.4) !important;
             transform: translateY(-2px) !important;
         }
 
@@ -557,7 +574,9 @@ def inject_premium_theme():
         button[data-testid="baseButton-primary"]:hover *,
         button[data-testid="baseButton-primary"]:hover p,
         button[data-testid="baseButton-primary"]:hover span {
-            color: #C92A2A !important;
+            color: #FFFFFF !important;
+            fill: #FFFFFF !important;
+            stroke: #FFFFFF !important;
         }
 
         /* Sidebar Navigation Radio Buttons */
@@ -565,12 +584,16 @@ def inject_premium_theme():
         div[data-testid="stRadio"] label p,
         div[data-testid="stRadio"] label span,
         div[data-testid="stRadio"] [data-testid="stMarkdownContainer"] p {
-            color: #E03131 !important;
+            color: var(--dark-text) !important;
             font-weight: 600 !important;
         }
 
+        div[data-testid="stRadio"] label:hover p {
+            color: var(--deep-emerald) !important;
+        }
+
         div[data-testid="stRadio"] div[role="radiogroup"] label > div:first-child {
-            border-color: #E03131 !important;
+            border-color: var(--deep-emerald) !important;
         }
 
         /* Prediction Result Banners */
@@ -980,7 +1003,7 @@ def render_top_navigation(current_page: str):
                 if is_active:
                     st.markdown(
                         f"""
-                        <div style="text-align:center; padding:10px 4px; background:#E03131; color:#FFFFFF; border-radius:12px; font-weight:700; font-size:0.82rem; box-shadow:0 3px 10px rgba(224,49,49,0.25);">
+                        <div style="text-align:center; padding:10px 4px; background:linear-gradient(135deg, #176B50, #123C2F); color:#FFFFFF; border:1px solid rgba(45,212,160,0.3); border-radius:12px; font-weight:700; font-size:0.82rem; box-shadow:0 4px 14px rgba(23,107,80,0.28);">
                             {label}
                         </div>
                         """,
